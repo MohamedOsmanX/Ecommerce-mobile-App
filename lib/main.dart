@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import './products/screens/product_list_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'auth/bloC/auth_bloc.dart';
+import 'auth/services/auth_service.dart';
+import 'products/blocs/product_bloc.dart';
+import 'products/services/product_services.dart';
+import 'cart/blocs/cart_bloc.dart';
+import 'cart/services/cart_service.dart';
+import './screens/main_screen.dart';
+import 'auth/screens/login.dart';
+import 'auth/screens/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,38 +19,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ScreenUtilInit for responsive design
-    return ScreenUtilInit(
-      designSize: const Size(375, 812), // iPhone X size, adjust as needed
-      minTextAdapt: true,
-      builder: (context, child) {
-        return MaterialApp(
-          title: 'E-Commerce App',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-            scaffoldBackgroundColor: const Color(0xFFF5F6FA),
-            appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.deepPurple,
-              elevation: 0,
-              titleTextStyle: TextStyle(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
-            ),
-            cardTheme: CardTheme(
-              color: Colors.white,
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-          home: const ProductListScreen(),
-        );
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(AuthService()),
+        ),
+        BlocProvider<ProductBloc>(
+          create: (context) => ProductBloc(ProductServices()),
+        ),
+        BlocProvider<CartBloc>(
+          create: (context) => CartBloc(CartService()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'E-Commerce App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+        ),
+        initialRoute: '/login',
+        routes: {
+          '/': (context) => const MainScreen(),
+          '/login': (context) => LoginScreen(),
+          '/register': (context) => RegisterScreen(),
+          '/products': (context) => const MainScreen(),
+        },
+      ),
     );
   }
 }

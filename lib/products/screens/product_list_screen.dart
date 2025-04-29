@@ -6,16 +6,32 @@ import '../blocs/product_state.dart';
 import '../models/product.dart';
 import '../services/product_services.dart';
 import 'product_details_screen.dart';
+import '../../auth/bloC/auth_bloc.dart';
+import '../../auth/bloC/auth_event.dart';
 
-class ProductListScreen extends StatelessWidget {
+class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
 
   @override
+  State<ProductListScreen> createState() => _ProductListScreenState();
+}
+
+class _ProductListScreenState extends State<ProductListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductBloc>().add(FetchProducts());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProductBloc(ProductServices())..add(FetchProducts()),
+    return WillPopScope(
+      onWillPop: () async => false,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Products', style: TextStyle(color: Colors.black),)),
+        appBar: AppBar(
+          title: const Text('Products'),
+          automaticallyImplyLeading: false,
+        ),
         body: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {
             if (state is ProductLoading) {
@@ -23,9 +39,10 @@ class ProductListScreen extends StatelessWidget {
             } else if (state is ProductLoaded) {
               final products = state.products;
               if (products.isEmpty) {
-                return Center(child: Text('No products found.'));
+                return const Center(child: Text('No products found.'));
               }
               return ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   final product = products[index];
@@ -35,7 +52,9 @@ class ProductListScreen extends StatelessWidget {
             } else if (state is ProductError) {
               return Center(child: Text('Error: ${state.message}'));
             } else {
-              return const Center(child: Text('Unknown state'));
+              // Initial state, trigger product fetch
+              context.read<ProductBloc>().add(FetchProducts());
+              return const Center(child: CircularProgressIndicator());
             }
           },
         ),
@@ -43,7 +62,6 @@ class ProductListScreen extends StatelessWidget {
     );
   }
 }
-
 class ProductCard extends StatelessWidget {
   final Product product;
 

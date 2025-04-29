@@ -7,6 +7,10 @@ class AddToCart extends CartEvent {
   AddToCart(this.product);
 }
 
+class FetchCart extends CartEvent {
+  FetchCart();
+}
+
 class RemoveFromCart extends CartEvent {
   final Product product;
   RemoveFromCart(this.product);
