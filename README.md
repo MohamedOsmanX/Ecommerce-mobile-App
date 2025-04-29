@@ -22,7 +22,7 @@ Follow these steps to set up and run the project locally:
 1. **Clone the Repository**:
    Clone the repository to your local machine using the following command:
    ```bash
-   git clone <your-repo-url>
+   git clone <[your-repo-url](https://github.com/MohamedOsmanX/Ecommerce-mobile-App)>
    ```
 
 2. **Navigate to the Project Directory**:
