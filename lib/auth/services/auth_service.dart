@@ -11,7 +11,7 @@ class AuthService {
       developer.log('Attempting login with email: $email');
 
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/login'),
+        Uri.parse('$baseUrl/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
       );
@@ -47,7 +47,7 @@ class AuthService {
       developer.log('Attempting registration: $email, role: $role');
 
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/register'),
+        Uri.parse('$baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'name': name,

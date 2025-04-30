@@ -21,7 +21,7 @@ class CartService {
 
   Future<List<CartItem>> fetchCart() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/cart'),
+      Uri.parse('$baseUrl/cart'),
       headers: headers,
     );
 
@@ -35,7 +35,7 @@ class CartService {
 
   Future<void> addToCart(String productId, int quantity) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/api/cart/add'),
+      Uri.parse('$baseUrl/cart/add'),
       headers: headers,
       body: json.encode({
         'productId': productId,
@@ -50,7 +50,7 @@ class CartService {
 
   Future<void> removeFromCart(String productId) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/api/cart/remove'),
+      Uri.parse('$baseUrl/cart/remove'),
       headers: headers,
       body: json.encode({
         'productId': productId,
@@ -65,7 +65,7 @@ class CartService {
   Future<void> updateQuantity(String productId, int quantity) async {
   try {
     final response = await http.put(
-      Uri.parse('$baseUrl/api/cart/$productId'),
+      Uri.parse('$baseUrl/cart/$productId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${await TokenService.getToken()}',
@@ -83,7 +83,7 @@ class CartService {
 
   Future<void> clearCart() async {
     final response = await http.post(
-      Uri.parse('$baseUrl/api/cart/clear'),
+      Uri.parse('$baseUrl/cart/clear'),
       headers: headers,
     );
 

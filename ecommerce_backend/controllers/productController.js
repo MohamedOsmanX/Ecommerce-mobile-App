@@ -49,9 +49,30 @@ const deleteProduct = async (req, res) => {
 };
 
 // Get all products (public)
+// Get all products (public) with pagination
 const getAllProducts = async (req, res) => {
-  const products = await Product.find().populate('seller', 'name email');
-  res.json(products);
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find()
+      .populate('seller', 'name email')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const total = await Product.countDocuments();
+
+    res.json({
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalProducts: total
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
 };
 
 // Get seller's own products

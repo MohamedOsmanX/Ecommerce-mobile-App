@@ -47,8 +47,8 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Cart',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
+              icon: Icon(Icons.settings),
+              label: 'Settings',
             ),
           ],
         ),

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../blocs/product_bloc.dart';
-import '../blocs/product_event.dart';
-import '../blocs/product_state.dart';
 import '../models/product.dart';
-import '../services/product_services.dart';
 import 'product_details_screen.dart';
-import '../../auth/bloC/auth_bloc.dart';
-import '../../auth/bloC/auth_event.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -17,11 +13,38 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
+  static const _pageSize = 10;
+  
+  final PagingController<int, Product> _pagingController =
+      PagingController(firstPageKey: 1);
+
   @override
   void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
     super.initState();
-    context.read<ProductBloc>().add(FetchProducts());
   }
+
+
+
+ Future<void> _fetchPage(int pageKey) async {
+  try {
+    final response = await context.read<ProductBloc>().fetchProductsPage(
+      page: pageKey,
+      limit: _pageSize,
+    );
+    
+    final isLastPage = response.currentPage >= response.totalPages;
+    if (isLastPage) {
+      _pagingController.appendLastPage(response.products);
+    } else {
+      _pagingController.appendPage(response.products, pageKey + 1);
+    }
+  } catch (error) {
+    _pagingController.error = error;
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -32,36 +55,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
           title: const Text('Products'),
           automaticallyImplyLeading: false,
         ),
-        body: BlocBuilder<ProductBloc, ProductState>(
-          builder: (context, state) {
-            if (state is ProductLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is ProductLoaded) {
-              final products = state.products;
-              if (products.isEmpty) {
-                return const Center(child: Text('No products found.'));
-              }
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return ProductCard(product: product);
-                },
-              );
-            } else if (state is ProductError) {
-              return Center(child: Text('Error: ${state.message}'));
-            } else {
-              // Initial state, trigger product fetch
-              context.read<ProductBloc>().add(FetchProducts());
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
+        body: RefreshIndicator(
+          onRefresh: () => Future.sync(() => _pagingController.refresh()),
+          child: PagedListView<int, Product>(
+            pagingController: _pagingController,
+            builderDelegate: PagedChildBuilderDelegate<Product>(
+              itemBuilder: (context, product, index) => ProductCard(product: product),
+              firstPageProgressIndicatorBuilder: (_) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              noItemsFoundIndicatorBuilder: (_) => const Center(
+                child: Text('No products found.'),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
 }
+
 class ProductCard extends StatelessWidget {
   final Product product;
 
@@ -77,8 +96,7 @@ class ProductCard extends StatelessWidget {
             context,
             PageRouteBuilder(
               transitionDuration: const Duration(milliseconds: 500),
-              pageBuilder:
-                  (_, __, ___) => ProductDetailsScreen(product: product),
+              pageBuilder: (_, __, ___) => ProductDetailsScreen(product: product),
               transitionsBuilder: (_, animation, __, child) {
                 return FadeTransition(opacity: animation, child: child);
               },
@@ -94,7 +112,6 @@ class ProductCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // Hero animation for image
                 Hero(
                   tag: product.id,
                   child: ClipRRect(
@@ -104,14 +121,12 @@ class ProductCard extends StatelessWidget {
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) =>
-                              const Icon(Icons.broken_image, size: 60),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image, size: 60),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Product info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +141,7 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         'Category: ${product.category}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
                         ),
@@ -142,15 +157,13 @@ class ProductCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Stock indicator
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        product.stock > 0 ? Colors.green[100] : Colors.red[100],
+                    color: product.stock > 0 ? Colors.green[100] : Colors.red[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

@@ -21,20 +21,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(AuthService()),
-        ),
+        BlocProvider<AuthBloc>(create: (context) => AuthBloc(AuthService())),
         BlocProvider<ProductBloc>(
           create: (context) => ProductBloc(ProductServices()),
         ),
-        BlocProvider<CartBloc>(
-          create: (context) => CartBloc(CartService()),
-        ),
+        BlocProvider<CartBloc>(create: (context) => CartBloc(CartService())),
       ],
       child: MaterialApp(
         title: 'E-Commerce App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF097969)),
           useMaterial3: true,
         ),
         initialRoute: '/login',

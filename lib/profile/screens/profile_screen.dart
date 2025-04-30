@@ -38,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Role: ${state.user.role}',
+                    'Role: ${state.user.role.toString().split('.').last}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const Spacer(),
@@ -61,9 +61,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             );
           }
-          return const Center(
-            child: Text('Please login to view profile'),
-          );
+          return const Center(child: Text('Please login to view profile'));
         },
       ),
     );
