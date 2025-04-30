@@ -108,13 +108,3 @@ lib/
     └── services/
 ```
 
-## Recent Updates
-
-- Added infinite scroll pagination for products
-- Implemented role-based authorization
-- Added product image handling with error states
-- Improved error handling and logging
-- Added pull-to-refresh functionality
-- Updated user role management
-- Enhanced API integration with pagination support
-- Added detailed logging for debugging
