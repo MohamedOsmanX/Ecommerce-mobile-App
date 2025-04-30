@@ -4,13 +4,12 @@ A Flutter e-commerce application with authentication, product management, and sh
 
 ## Features
 
-<<<<<<< HEAD
+
 ### Authentication
 - User login and registration
 - Role-based authorization (Customer, Seller, Admin)
 - JWT token authentication
 - Secure password handling
-=======
 - **Product Listing**: Browse a list of products with details such as name, price, and description.
 - **Cart Management**: Add/remove items to/from the cart, update item quantities, and view the total price.
 - **User Authentication**: Secure login and registration using email and password.
@@ -82,16 +81,6 @@ DATABASE_URL=your_database_url
 flutter run
 ```
 
-## Dependencies
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_bloc: ^8.1.0
-  http: ^1.1.0
-  infinite_scroll_pagination: ^4.0.0
-```
 
 ## Project Structure
 
