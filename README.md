@@ -8,7 +8,6 @@ A multi-platform Flutter-based e-commerce application that allows users to brows
 
 - **Product Listing**: Browse a list of products with details such as name, price, and description.
 - **Cart Management**: Add/remove items to/from the cart, update item quantities, and view the total price.
-- **Order History**: View past orders with details of purchased items.
 - **User Authentication**: Secure login and registration using email and password.
 - **Backend Integration**: Real-time data synchronization with a backend server.
 - **Multi-Platform Support**: Runs seamlessly on Android, iOS, macOS, Linux, Windows, and web.
