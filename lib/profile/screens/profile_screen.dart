@@ -22,11 +22,6 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    child: Icon(Icons.person, size: 50),
-                  ),
-                  const SizedBox(height: 24),
                   Text(
                     'Name: ${state.user.name}',
                     style: Theme.of(context).textTheme.titleLarge,
@@ -38,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Role: ${state.user.role.toString().split('.').last}',
+                    'Role: ${state.user.role.toJson()}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const Spacer(),
