@@ -16,7 +16,6 @@ A Flutter e-commerce application with authentication, product management, and sh
 - **User Authentication**: Secure login and registration using email and password.
 - **Backend Integration**: Real-time data synchronization with a backend server.
 - **Multi-Platform Support**: Runs seamlessly on Android, iOS, macOS, Linux, Windows, and web.
->>>>>>> 6a2b3467002259e7b4db17f50cb353ebb7596202
 
 ### Product Management 
 - Infinite scroll pagination for product listing
