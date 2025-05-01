@@ -5,9 +5,22 @@ import '../blocs/cart_state.dart';
 import '../blocs/cart_events.dart';
 import '../models/cart_item.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  
+  @override
+   void initState() {
+    super.initState();
+    // Fetch cart items when screen initializes
+    context.read<CartBloc>().add(FetchCart());
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +36,7 @@ class CartScreen extends StatelessWidget {
           // Show empty cart message if no items
           if (items.isEmpty) {
             return const Center(
-              child: Text(
-                'Your cart is empty',
-                style: TextStyle(fontSize: 18),
-              ),
+              child: Text('Your cart is empty', style: TextStyle(fontSize: 18)),
             );
           }
 
@@ -57,13 +67,13 @@ class CartScreen extends StatelessWidget {
                                 width: 80,
                                 height: 80,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                  width: 80,
-                                  height: 80,
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.error),
-                                ),
+                                errorBuilder:
+                                    (context, error, stackTrace) => Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: Colors.grey[200],
+                                      child: const Icon(Icons.error),
+                                    ),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -92,43 +102,61 @@ class CartScreen extends StatelessWidget {
                                     children: [
                                       Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.grey),
-                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         child: Row(
                                           children: [
                                             IconButton(
                                               icon: const Icon(Icons.remove),
-                                              onPressed: item.quantity > 1
-                                                  ? () {
-                                                      context.read<CartBloc>().add(
-                                                          DecreaseQuantity(
-                                                              item.product));
-                                                    }
-                                                  : null,
-                                              visualDensity: VisualDensity.compact,
+                                              onPressed:
+                                                  item.quantity > 1
+                                                      ? () {
+                                                        context
+                                                            .read<CartBloc>()
+                                                            .add(
+                                                              DecreaseQuantity(
+                                                                item.product,
+                                                              ),
+                                                            );
+                                                      }
+                                                      : null,
+                                              visualDensity:
+                                                  VisualDensity.compact,
                                             ),
                                             Container(
                                               constraints: const BoxConstraints(
-                                                  minWidth: 40),
+                                                minWidth: 40,
+                                              ),
                                               alignment: Alignment.center,
                                               child: Text(
                                                 '${item.quantity}',
-                                                style:
-                                                    const TextStyle(fontSize: 16),
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
                                               ),
                                             ),
                                             IconButton(
                                               icon: const Icon(Icons.add),
-                                              onPressed: item.quantity <
-                                                      item.product.stock
-                                                  ? () {
-                                                      context.read<CartBloc>().add(
-                                                          IncreaseQuantity(
-                                                              item.product));
-                                                    }
-                                                  : null,
-                                              visualDensity: VisualDensity.compact,
+                                              onPressed:
+                                                  item.quantity <
+                                                          item.product.stock
+                                                      ? () {
+                                                        context
+                                                            .read<CartBloc>()
+                                                            .add(
+                                                              IncreaseQuantity(
+                                                                item.product,
+                                                              ),
+                                                            );
+                                                      }
+                                                      : null,
+                                              visualDensity:
+                                                  VisualDensity.compact,
                                             ),
                                           ],
                                         ),
@@ -138,9 +166,9 @@ class CartScreen extends StatelessWidget {
                                         icon: const Icon(Icons.delete_outline),
                                         color: Colors.red,
                                         onPressed: () {
-                                          context
-                                              .read<CartBloc>()
-                                              .add(RemoveFromCart(item.product));
+                                          context.read<CartBloc>().add(
+                                            RemoveFromCart(item.product),
+                                          );
                                         },
                                       ),
                                     ],
@@ -208,30 +236,39 @@ class CartScreen extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.red,
-                                side: const BorderSide(color: Colors.red),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
+                            child: ElevatedButton(
                               onPressed: () {
                                 context.read<CartBloc>().add(ClearCart());
                               },
-                              child: const Text('Clear Cart'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(219, 255, 0, 0),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+
+                              child: const Text('Clear Cart', style: TextStyle(color: Colors.white),),
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: const Color(0xFF097969),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                               onPressed: () {
                                 // Checkout functionality will be added later
                               },
-                              child: const Text('Checkout'),
+                              child: const Text('Checkout', style: TextStyle(color: Colors.white),),
                             ),
                           ),
                         ],

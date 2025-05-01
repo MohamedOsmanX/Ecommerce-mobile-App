@@ -138,11 +138,11 @@ class RegisterScreen extends StatelessWidget {
                           items: const [
                             DropdownMenuItem(
                               value: UserRole.customer,
-                              child: Text('CUSTOMER'),
+                              child: Text('Customer'),
                             ),
                             DropdownMenuItem(
                               value: UserRole.seller,
-                              child: Text('SELLER'),
+                              child: Text('Seller'),
                             ),
                           ],
                           onChanged: (value) {

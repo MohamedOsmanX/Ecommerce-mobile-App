@@ -1,3 +1,9 @@
+import 'package:ecommerce_app/auth/bloC/auth_bloc.dart';
+import 'package:ecommerce_app/auth/bloC/auth_state.dart';
+import 'package:ecommerce_app/auth/models/User.dart';
+import 'package:ecommerce_app/core/enums/user_roles.dart';
+import 'package:ecommerce_app/products/blocs/product_event.dart';
+import 'package:ecommerce_app/products/services/product_services.dart';
 import 'package:ecommerce_app/products/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -6,6 +12,7 @@ import '../widgets/product_card.dart';
 import '../widgets/product_grid.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/product_bloc.dart';
+import '../screens/create_product.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -30,14 +37,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.initState();
   }
 
-
-Future<void> _fetchPage(int pageKey) async {
+  Future<void> _fetchPage(int pageKey) async {
     try {
       final response = await context.read<ProductBloc>().fetchProductsPage(
         page: pageKey,
         limit: _pageSize,
       );
-      
+
       final isLastPage = response.currentPage >= response.totalPages;
       if (isLastPage) {
         _pageingController.appendLastPage(response.products);
@@ -89,7 +95,7 @@ Future<void> _fetchPage(int pageKey) async {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 1,
+                                childAspectRatio: 0.75,
                                 mainAxisSpacing: 8,
                                 crossAxisSpacing: 8,
                               ),
@@ -126,6 +132,33 @@ Future<void> _fetchPage(int pageKey) async {
               ),
             ),
           ],
+        ),
+        floatingActionButton: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthAuthenticated &&
+                (state.user.role == UserRole.admin ||
+                    state.user.role == UserRole.seller)) {
+              return FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => BlocProvider(
+                            create: (context) => ProductBloc(ProductServices()),
+                            child: const AddProductScreen(),
+                          ),
+                    ),
+                  ).then((_) {
+                    context.read<ProductBloc>().add(FetchProducts());
+                  });
+                },
+                backgroundColor: Theme.of(context).primaryColor,
+                child: const Icon(Icons.add, color: Colors.white,),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );

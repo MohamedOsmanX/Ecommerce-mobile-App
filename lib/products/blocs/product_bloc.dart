@@ -11,6 +11,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   ProductBloc(this.productServices) : super(ProductLoading()) {
     on<FetchProducts>(_onFetchProducts);
+    on<CreateProduct>(_oncreateProduct);
   }
 
   Future<PaginatedResponse<Product>> fetchProductsPage({
@@ -19,7 +20,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }) async {
     try {
       developer.log('Fetching products page: $page, limit: $limit');
-      return await productServices.getProducts(  // Changed from fetchProducts to getProducts
+      return await productServices.getProducts(
+        // Changed from fetchProducts to getProducts
         page: page,
         limit: limit,
       );
@@ -36,16 +38,32 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     try {
       developer.log('Starting to fetch products');
       emit(ProductLoading());
-      
-      final response = await productServices.getProducts(  // Changed from fetchProducts to getProducts
+
+      final response = await productServices.getProducts(
+        // Changed from fetchProducts to getProducts
         page: 1,
         limit: 10,
       );
-      
-      developer.log('Products fetched successfully: ${response.products.length} items');
+
+      developer.log(
+        'Products fetched successfully: ${response.products.length} items',
+      );
       emit(ProductLoaded(response.products));
     } catch (e) {
       developer.log('Error in _onFetchProducts', error: e);
+      emit(ProductError(e.toString()));
+    }
+  }
+
+  Future<void> _oncreateProduct(
+    CreateProduct event,
+    Emitter<ProductState> emit,
+  ) async {
+    try {
+      emit(ProductLoading());
+      await productServices.createProduct(event.product);
+      add(FetchProducts());
+    } catch (e) {
       emit(ProductError(e.toString()));
     }
   }

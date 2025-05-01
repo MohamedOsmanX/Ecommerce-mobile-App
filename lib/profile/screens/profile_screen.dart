@@ -41,15 +41,16 @@ class ProfileScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
+                            backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+                            padding: const EdgeInsets.all(8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),),
                       onPressed: () {
                         context.read<AuthBloc>().add(LogoutRequested());
                         Navigator.pushReplacementNamed(context, '/login');
                       },
-                      child: const Text('Logout'),
+                      child: const Text('Logout', style: TextStyle(color: Colors.white),),
                     ),
                   ),
                 ],

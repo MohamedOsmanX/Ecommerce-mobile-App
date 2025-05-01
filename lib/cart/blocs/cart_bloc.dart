@@ -46,14 +46,27 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     RemoveFromCart event,
     Emitter<CartState> emit,
   ) async {
-    try {
-      emit(CartLoading());
-      developer.log('Removing item from cart: ${event.product.id}');
-      await _cartService.removeFromCart(event.product.id);
-      add(FetchCart());
-    } catch (e) {
-      developer.log('Error removing from cart', error: e);
-      emit(CartError(e.toString()));
+    if (state is CartUpdated) {
+      try {
+        final currentItems = (state as CartUpdated).items;
+        // Optimistically update the UI by filtering out the removed item
+        final updatedItems =
+            currentItems
+                .where((item) => item.product.id != event.product.id)
+                .toList();
+
+        // Update UI immediately
+        emit(CartUpdated(updatedItems));
+
+        // Then update the backend
+        developer.log('Removing item from cart: ${event.product.id}');
+        await _cartService.removeFromCart(event.product.id);
+      } catch (e) {
+        developer.log('Error removing from cart', error: e);
+        // If error occurs, refresh the cart to get the correct state
+        add(FetchCart());
+        emit(CartError('Failed to remove item'));
+      }
     }
   }
 

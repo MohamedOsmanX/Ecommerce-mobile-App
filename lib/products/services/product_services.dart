@@ -47,7 +47,7 @@ class ProductServices {
     }
   }
 
-  Future<Product> addProduct(Product product) async {
+  Future<Product> createProduct(Product product) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/products/create'),

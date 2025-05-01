@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/product.dart';
+import '../../cart/blocs/cart_bloc.dart';
+import '../../cart/blocs/cart_events.dart';
 import '../screens/product_details_screen.dart';
 
-class ProductGridItem extends StatelessWidget {
+class ProductGridItem extends StatefulWidget {
   final Product product;
 
   const ProductGridItem({super.key, required this.product});
 
+  @override
+  State<ProductGridItem> createState() => _ProductGridItemState();
+}
+
+class _ProductGridItemState extends State<ProductGridItem> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -20,7 +28,7 @@ class ProductGridItem extends StatelessWidget {
             PageRouteBuilder(
               transitionDuration: const Duration(milliseconds: 500),
               pageBuilder:
-                  (_, __, ___) => ProductDetailsScreen(product: product),
+                  (_, __, ___) => ProductDetailsScreen(product: widget.product),
               transitionsBuilder: (_, animation, __, child) {
                 return FadeTransition(opacity: animation, child: child);
               },
@@ -34,13 +42,13 @@ class ProductGridItem extends StatelessWidget {
             Stack(
               children: [
                 Hero(
-                  tag: product.id,
+                  tag: widget.product.id,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
                     child: Image.network(
-                      product.imageUrl,
+                      widget.product.imageUrl,
                       height: 140, // Reduced height
                       width: double.infinity,
                       fit: BoxFit.contain,
@@ -63,13 +71,13 @@ class ProductGridItem extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color:
-                          product.stock > 0
+                          widget.product.stock > 0
                               ? Colors.green.withOpacity(0.9)
                               : Colors.red.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      product.stock > 0 ? 'In Stock' : 'Out of Stock',
+                      widget.product.stock > 0 ? 'In Stock' : 'Out of Stock',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -91,7 +99,7 @@ class ProductGridItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product.name,
+                        widget.product.name,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                         maxLines: 1,
@@ -99,7 +107,7 @@ class ProductGridItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        product.category,
+                        widget.product.category,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -112,7 +120,7 @@ class ProductGridItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'AED ${product.price.toStringAsFixed(2)}',
+                        'AED ${widget.product.price.toStringAsFixed(2)}',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold,
@@ -120,9 +128,20 @@ class ProductGridItem extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart),
-                        onPressed: () {
-                          // Add to cart functionality will be implemented later
-                        },
+                         onPressed:
+                    widget.product.stock > 0
+                        ? () {
+                          context.read<CartBloc>().add(
+                            AddToCart(widget.product),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Added to cart'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                        : null,
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
