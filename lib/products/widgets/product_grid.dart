@@ -11,17 +11,16 @@ class ProductGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.all(8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      margin: const EdgeInsets.all(4), // Reduced margin
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
           Navigator.push(
             context,
             PageRouteBuilder(
               transitionDuration: const Duration(milliseconds: 500),
-              pageBuilder: (_, _, _) => ProductDetailsScreen(product: product),
+              pageBuilder:
+                  (_, __, ___) => ProductDetailsScreen(product: product),
               transitionsBuilder: (_, animation, __, child) {
                 return FadeTransition(opacity: animation, child: child);
               },
@@ -42,19 +41,18 @@ class ProductGridItem extends StatelessWidget {
                     ),
                     child: Image.network(
                       product.imageUrl,
-                      height: 180,
+                      height: 140, // Reduced height
                       width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Container(
-                            height: 180,
+                      fit: BoxFit.contain,
+                      errorBuilder:
+                          (context, error, stackTrace) => Container(
+                            height: 140,
                             color: Colors.grey[200],
                             child: const Icon(Icons.broken_image, size: 60),
                           ),
                     ),
                   ),
                 ),
-                // Stock indicator badge
                 Positioned(
                   top: 8,
                   right: 8,
@@ -64,9 +62,10 @@ class ProductGridItem extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: product.stock > 0 
-                          ? Colors.green.withOpacity(0.9)
-                          : Colors.red.withOpacity(0.9),
+                      color:
+                          product.stock > 0
+                              ? Colors.green.withOpacity(0.9)
+                              : Colors.red.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -82,42 +81,56 @@ class ProductGridItem extends StatelessWidget {
               ],
             ),
             // Product details
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Product name
-                    Text(
-                      product.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Add this
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    // Price row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'AED ${product.price.toStringAsFixed(2)}',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const SizedBox(height: 4),
+                      Text(
+                        product.category,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
                         ),
-                        Icon(
-                          Icons.add_shopping_cart,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'AED ${product.price.toStringAsFixed(2)}',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add_shopping_cart),
+                        onPressed: () {
+                          // Add to cart functionality will be implemented later
+                        },
+                        iconSize: 20,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

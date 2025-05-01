@@ -89,7 +89,7 @@ Future<void> _fetchPage(int pageKey) async {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.75,
+                                childAspectRatio: 1,
                                 mainAxisSpacing: 8,
                                 crossAxisSpacing: 8,
                               ),
