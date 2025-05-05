@@ -39,8 +39,8 @@ class _MainScreenState extends State<MainScreen> {
           onTap: _onItemTapped,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.store),
-              label: 'Products',
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),

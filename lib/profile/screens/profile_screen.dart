@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../auth/bloC/auth_bloc.dart';
 import '../../auth/bloC/auth_event.dart';
 import '../../auth/bloC/auth_state.dart';
+import '../../orders/screens/order_list_screen.dart';
+import '../../orders/bloc/order_bloc.dart';
+import '../../orders/bloc/order_event.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -37,20 +40,56 @@ class ProfileScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const Spacer(),
+                  // Orders Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-                            padding: const EdgeInsets.all(8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),),
+                        backgroundColor: Theme.of(context).primaryColor,
+                        padding: const EdgeInsets.all(8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.read<OrderBloc>().add(FetchOrders());
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OrderListScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'My Orders',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Logout Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+                        padding: const EdgeInsets.all(8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                       onPressed: () {
                         context.read<AuthBloc>().add(LogoutRequested());
                         Navigator.pushReplacementNamed(context, '/login');
                       },
-                      child: const Text('Logout', style: TextStyle(color: Colors.white),),
+                      child: const Text(
+                        'Logout',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],

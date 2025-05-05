@@ -1,10 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 import '../../core/constants/api_constants.dart';
 
 class AuthService {
   static const String baseUrl = ApiConstants.baseUrl;
+
+   Future<void> saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+  }
+
+  // Get token for API requests
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  // Clear token on logout
+  Future<void> clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+  }
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
