@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL for your backend API
-  static const String baseUrl = 'http://10.255.254.84:8080/api';
+  static const String baseUrl = 'http://yourIP:8080/api';
   
   // Common API endpoints
   static const String login = '/api/auth/login';
