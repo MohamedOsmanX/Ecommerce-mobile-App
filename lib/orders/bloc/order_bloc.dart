@@ -9,6 +9,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc(this._orderService) : super(OrderInitial()) {
     on<CreateOrder>(_onCreateOrder);
     on<FetchOrders>(_onFetchOrders);
+    on<FetchMyOrders>(_onFetchMyOrders);
   }
 
   Future<void> _onCreateOrder(
@@ -17,9 +18,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   ) async {
     try {
       emit(OrderLoading());
-      final order = await _orderService.createOrder(
-        event.shippingAddress
-      );
+      final order = await _orderService.createOrder(event.shippingAddress);
       emit(OrderSuccess(order));
     } catch (e) {
       emit(OrderError(e.toString()));
@@ -33,6 +32,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     try {
       emit(OrderLoading());
       final orders = await _orderService.getOrders();
+      emit(OrderLoaded(orders));
+    } catch (e) {
+      emit(OrderError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchMyOrders(
+    FetchMyOrders event,
+    Emitter<OrderState> emit,
+  ) async {
+    try {
+      emit(OrderLoading());
+      final orders = await _orderService.getUserOrders();
       emit(OrderLoaded(orders));
     } catch (e) {
       emit(OrderError(e.toString()));

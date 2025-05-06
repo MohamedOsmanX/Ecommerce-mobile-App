@@ -7,7 +7,7 @@ class User {
   final UserRole role;
 
   User({
-    required this.id,
+    required this.id,     
     required this.name,
     required this.email,
     required this.role,

@@ -11,80 +11,101 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
 
   AuthBloc(this._authService) : super(AuthInitial()) {
-    on<LoginRequested>((event, emit) async {
-      try {
-        emit(AuthLoading());
-        final response = await _authService.login(event.email, event.password);
+    on<LoginRequested>(_onLoginRequested);
+    on<RegisterRequested>(_onRegisterRequested);
+    on<LogoutRequested>(_onLogoutRequested);
+    on<LoginSuccess>(_onLoginSuccess);
+  }
 
-        if (response['token'] == null || response['role'] == null) {
-          throw Exception('Invalid response format');
-        }
+  Future<void> _onLoginRequested(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthLoading());
+      final response = await _authService.login(event.email, event.password);
 
-        // Store the token
-        final token = response['token'] as String;
-        TokenService.setToken(token);
-
-        final decodedToken = JwtDecoder.decode(token);
-
-        // Create user with proper role conversion
-        final user = User(
-          id: decodedToken['userId'] ?? '',
-          name: event.email.split('@')[0],
-          email: event.email,
-          role: UserRole.values.firstWhere(
-            (r) => r.toString().split('.').last == response['role'],
-            orElse: () => UserRole.customer,
-          ),
-        );
-
-        emit(AuthAuthenticated(user));
-      } catch (e) {
-        emit(AuthError(e.toString()));
+      if (response['token'] == null || response['role'] == null) {
+        throw Exception('Invalid response format');
       }
-    });
 
-    on<RegisterRequested>((event, emit) async {
-      try {
-        emit(AuthLoading());
-        final response = await _authService.register(
-          event.name,
-          event.email,
-          event.password,
-          event.role,
-        );
+      // Store the token
+      final token = response['token'] as String;
+      TokenService.setToken(token);
 
-        if (response['token'] == null || response['role'] == null) {
-          throw Exception('Invalid response format');
-        }
+      final decodedToken = JwtDecoder.decode(token);
 
-        final token = response['token'] as String;
-        TokenService.setToken(token);
+      // Create user with proper role conversion
+      final user = User(
+        id: decodedToken['userId'] ?? '',
+        name: event.email.split('@')[0],
+        email: event.email,
+        role: UserRole.values.firstWhere(
+          (r) => r.toString().split('.').last == response['role'],
+          orElse: () => UserRole.customer,
+        ),
+      );
 
-        final decodedToken = JwtDecoder.decode(token);
+      emit(AuthAuthenticated(user, token));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
 
-        final user = User(
-          id: decodedToken['userId'] ?? '',
-          name: event.name,
-          email: event.email,
-          role: UserRole.values.firstWhere(
-            (r) => r.toString().split('.').last == response['role'],
-            orElse: () => UserRole.customer,
-          ),
-        );
+  Future<void> _onLoginSuccess(
+    LoginSuccess event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthAuthenticated(event.user, event.token));
+  }
 
-        emit(AuthAuthenticated(user));
-      } catch (e) {
-        emit(AuthError(e.toString()));
+  Future<void> _onRegisterRequested(
+    RegisterRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      emit(AuthLoading());
+      final response = await _authService.register(
+        event.name,
+        event.email,
+        event.password,
+        event.role,
+      );
+
+      if (response['token'] == null || response['role'] == null) {
+        throw Exception('Invalid response format');
       }
-    });
 
-    on<LogoutRequested>((event, emit) {
-      try {
-        TokenService.clearToken();
-        emit(AuthInitial());
-      } catch (e) {
-        emit(AuthError(e.toString()));
-      }
-    });
+      final token = response['token'] as String;
+      TokenService.setToken(token);
+
+      final decodedToken = JwtDecoder.decode(token);
+
+      final user = User(
+        id: decodedToken['userId'] ?? '',
+        name: event.name,
+        email: event.email,
+        role: UserRole.values.firstWhere(
+          (r) => r.toString().split('.').last == response['role'],
+          orElse: () => UserRole.customer,
+        ),
+      );
+
+      emit(AuthAuthenticated(user, token));
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> _onLogoutRequested(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      TokenService.clearToken();
+      emit(AuthInitial());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 }

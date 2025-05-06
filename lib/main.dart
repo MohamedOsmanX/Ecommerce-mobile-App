@@ -9,6 +9,8 @@ import 'cart/services/cart_service.dart';
 import './screens/main_screen.dart';
 import 'auth/screens/login.dart';
 import 'auth/screens/register.dart';
+import 'orders/bloc/order_bloc.dart';
+import 'orders/services/order_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +28,9 @@ class MyApp extends StatelessWidget {
           create: (context) => ProductBloc(ProductServices()),
         ),
         BlocProvider<CartBloc>(create: (context) => CartBloc(CartService())),
+        BlocProvider<OrderBloc>(
+          create: (context) => OrderBloc(OrderService(context)),
+        ),
       ],
       child: MaterialApp(
         title: 'E-Commerce App',

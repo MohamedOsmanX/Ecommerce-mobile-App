@@ -7,3 +7,5 @@ class CreateOrder extends OrderEvent {
 }
 
 class FetchOrders extends OrderEvent {}
+
+class FetchMyOrders extends OrderEvent {}

@@ -4,6 +4,7 @@ import '../blocs/cart_bloc.dart';
 import '../blocs/cart_state.dart';
 import '../blocs/cart_events.dart';
 import '../models/cart_item.dart';
+import '../../orders/screens/checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -13,14 +14,13 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  
   @override
-   void initState() {
+  void initState() {
     super.initState();
     // Fetch cart items when screen initializes
     context.read<CartBloc>().add(FetchCart());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,7 +241,12 @@ class _CartScreenState extends State<CartScreen> {
                                 context.read<CartBloc>().add(ClearCart());
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(219, 255, 0, 0),
+                                backgroundColor: const Color.fromARGB(
+                                  219,
+                                  255,
+                                  0,
+                                  0,
+                                ),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 20,
                                 ),
@@ -250,7 +255,10 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
 
-                              child: const Text('Clear Cart', style: TextStyle(color: Colors.white),),
+                              child: const Text(
+                                'Clear Cart',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -266,9 +274,18 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               onPressed: () {
-                                // Checkout functionality will be added later
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const CheckoutScreen(),
+                                  ),
+                                );
                               },
-                              child: const Text('Checkout', style: TextStyle(color: Colors.white),),
+                              child: const Text(
+                                'Checkout',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ],

@@ -10,6 +10,10 @@ class OrderListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderBloc>().add(FetchMyOrders());
+    });
     return Scaffold(
       appBar: AppBar(title: const Text('My Orders')),
       body: BlocBuilder<OrderBloc, OrderState>(

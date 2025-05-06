@@ -1,49 +1,110 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/orders.dart';
 import '../../core/constants/api_constants.dart';
-import 'package:dio/dio.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../auth/bloC/auth_bloc.dart';
+import '../../auth/bloC/auth_state.dart';
 
 class OrderService {
-  final Dio _dio;
-  final String baseUrl = ApiConstants.baseUrl; // Make sure this is set correctly
+  final String baseUrl = ApiConstants.baseUrl;
+  final BuildContext context;
 
-  OrderService() : _dio = Dio(BaseOptions(
-    baseUrl: 'YOUR_API_URL',
-    validateStatus: (status) => status! < 500,
-  ));
+  OrderService(this.context);
 
-  Future<Order> createOrder(String shippingAddress) async {
-    try {
-      final response = await _dio.post(
-        '/api/orders/create',
-        data: {'shippingAddress': shippingAddress},
-      );
-
-      if (response.statusCode == 201) {
-        return Order.fromJson(response.data);
-      } else {
-        throw Exception('Failed to create order: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to create order: $e');
+  String? _getToken() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      return authState.token;
     }
+    return null;
   }
 
   Future<List<Order>> getOrders() async {
     try {
-      final response = await _dio.get('/api/orders/my-orders');
+      final token = _getToken();
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/orders/all'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
-        final List<dynamic> ordersJson = response.data;
+        final List<dynamic> ordersJson = json.decode(response.body);
         return ordersJson.map((json) => Order.fromJson(json)).toList();
       } else {
         throw Exception('Failed to fetch orders: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to fetch orders: $e');
+    }
+  }
+
+    Future<List<Order>> getUserOrders() async {
+  try {
+    final token = _getToken();
+    if (token == null) {
+      throw Exception('No authentication token found');
+    }
+
+    print('Fetching orders with token: $token');
+    print('Using URL: $baseUrl/orders/my');
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/orders/my'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> ordersJson = json.decode(response.body);
+      return ordersJson.map((json) => Order.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch orders: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching orders: $e');
+    throw Exception('Failed to fetch orders: $e');
+  }
+}
+
+  Future<Order> createOrder(String shippingAddress) async {
+    try {
+      final token = _getToken();
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/orders/create'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'shippingAddress': shippingAddress,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return Order.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to create order: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to create order: $e');
     }
   }
 }
