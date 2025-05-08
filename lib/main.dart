@@ -11,8 +11,16 @@ import 'auth/screens/login.dart';
 import 'auth/screens/register.dart';
 import 'orders/bloc/order_bloc.dart';
 import 'orders/services/order_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'notification/services/notification_service.dart';
+import 'notification/screens/test_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  final notificationService = NotificationService();
+  await notificationService.initNotifications();
   runApp(const MyApp());
 }
 
@@ -39,12 +47,13 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF097969)),
           useMaterial3: true,
         ),
-        initialRoute: '/login',
+        initialRoute: '/notification',
         routes: {
           '/': (context) => const MainScreen(),
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
           '/products': (context) => const MainScreen(),
+          '/notification': (context) => NotificationTestScreen(),
         },
       ),
     );

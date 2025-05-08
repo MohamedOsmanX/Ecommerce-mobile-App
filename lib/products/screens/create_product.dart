@@ -20,7 +20,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _imageUrlController = TextEditingController();
   String? _selectedCategory;
   bool _isValidImageUrl = false;
-  
+
   final List<String> categories = ['Electronics', 'Clothing', 'Books', 'Others'];
 
   @override
@@ -59,7 +59,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     : const Icon(Icons.image, size: 50),
               ),
               const SizedBox(height: 16),
-              
+
               // Image URL Field
               TextFormField(
                 controller: _imageUrlController,
@@ -105,7 +105,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Description Field
               TextFormField(
                 controller: _descriptionController,
@@ -122,7 +122,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Price Field
               TextFormField(
                 controller: _priceController,
@@ -142,7 +142,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Stock Field
               TextFormField(
                 controller: _stockController,
@@ -162,7 +162,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Category Dropdown
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
@@ -189,7 +189,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              
+
               // Submit Button
               ElevatedButton(
                 onPressed: _submitForm,
