@@ -18,14 +18,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> _onFetchCart(FetchCart event, Emitter<CartState> emit) async {
+    emit(CartLoading());
     try {
-      emit(CartLoading());
-      developer.log('Fetching cart items');
-      final List<CartItem> items = await _cartService.fetchCart();
-      developer.log('Cart items fetched: ${items.length} items');
+      final items = await _cartService.fetchCart();
       emit(CartUpdated(items));
     } catch (e) {
-      developer.log('Error fetching cart', error: e);
       emit(CartError(e.toString()));
     }
   }

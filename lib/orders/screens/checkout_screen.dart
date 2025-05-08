@@ -24,7 +24,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
-  void _confirmOrder(BuildContext context, List<CartItem> items) {
+  void _confirmOrder(BuildContext context, List<CartItem> items) async {
     final address = _addressController.text.trim();
     if (address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,7 +37,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     context.read<OrderBloc>().add(CreateOrder(shippingAddress: address));
 
     // Clear the cart
-    context.read<CartBloc>().add(ClearCart());
+    await Future.delayed(const Duration(seconds: 1));
+
+    context.read<CartBloc>().add(FetchCart());
 
     // Navigate back to the cart screen
     Navigator.pop(context);

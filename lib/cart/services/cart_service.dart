@@ -68,7 +68,7 @@ class CartService {
       Uri.parse('$baseUrl/cart/$productId'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${await TokenService.getToken()}',
+        'Authorization': 'Bearer ${TokenService.getToken()}',
       },
       body: json.encode({'quantity': quantity}),
     );

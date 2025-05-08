@@ -19,7 +19,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required int limit,
   }) async {
     try {
-      developer.log('Fetching products page: $page, limit: $limit');
       return await productServices.getProducts(
         // Changed from fetchProducts to getProducts
         page: page,

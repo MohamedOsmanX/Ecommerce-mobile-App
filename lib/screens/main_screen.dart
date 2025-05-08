@@ -30,26 +30,53 @@ class _MainScreenState extends State<MainScreen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _screens,
+        appBar: AppBar(
+          title: const Text('E-Commerce App'),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          actions: [
+            Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  onPressed:
+                      () => Navigator.pushNamed(context, '/notification'),
+                  tooltip: 'Notifications',
+                ),
+                Positioned(
+                  right: 5,
+                  top: 5,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: const Text(
+                      '1',
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
+        body: IndexedStack(index: _selectedIndex, children: _screens),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
               label: 'Cart',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:ecommerce_app/auth/bloC/auth_bloc.dart';
 import 'package:ecommerce_app/auth/bloC/auth_state.dart';
-import 'package:ecommerce_app/auth/models/User.dart';
 import 'package:ecommerce_app/core/enums/user_roles.dart';
 import 'package:ecommerce_app/products/blocs/product_event.dart';
 import 'package:ecommerce_app/products/services/product_services.dart';
