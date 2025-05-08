@@ -46,3 +46,6 @@ app.*.map.json
 
 # environment variables
 /ecommerce_backend/.env
+
+# Firebase related
+/android/app/google-services.json
