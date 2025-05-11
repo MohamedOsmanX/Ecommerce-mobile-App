@@ -55,12 +55,66 @@ const createOrder = async (req, res) => {
 
     // Create a notification for the user
     const notification = new Notification({
-      user: userId,
+      recipient: userId,
       title: 'Order Confirmed',
       message: `Your order #${order._id} has been confirmed.`,
       type: 'order',
+      orderId: order._id
     });
     await notification.save({ session });
+
+    // Create notifications for suppliers (sellers)
+    const supplierMap = new Map(); // To track unique suppliers
+
+    for (const item of cart.items) {
+      // Get the product with its seller (supplier)
+      const product = await Product.findById(item.product._id)
+        .populate('seller', 'name email')
+        .session(session);
+
+      if (product && product.seller) {
+        const supplierId = product.seller._id.toString();
+        
+        // If we haven't created a notification for this supplier yet
+        if (!supplierMap.has(supplierId)) {
+          supplierMap.set(supplierId, {
+            items: [],
+            total: 0
+          });
+        }
+        
+        // Add this item to the supplier's list
+        supplierMap.get(supplierId).items.push({
+          name: product.name,
+          quantity: item.quantity,
+          price: product.price
+        });
+        
+        // Update total for this supplier
+        supplierMap.get(supplierId).total += item.quantity * product.price;
+      }
+    }
+
+    // Create individual notifications for each supplier
+    const supplierNotifications = [];
+    for (const [supplierId, data] of supplierMap.entries()) {
+      const itemsList = data.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
+      
+      const notification = new Notification({
+        recipient: supplierId,
+        title: 'New Order Received',
+        message: `A customer has ordered: ${itemsList}. Order total: $${data.total.toFixed(2)}`,
+        type: 'supplier',
+        orderId: order._id
+      });
+      
+      supplierNotifications.push(notification);
+    }
+
+    // Save all supplier notifications
+    if (supplierNotifications.length > 0) {
+      await Notification.insertMany(supplierNotifications, { session });
+    }
 
     // Commit transaction
     await session.commitTransaction();
@@ -79,6 +133,7 @@ const createOrder = async (req, res) => {
     session.endSession();
   }
 };
+
 // Get user's orders
 const getUserOrders = async (req, res) => {
     try {

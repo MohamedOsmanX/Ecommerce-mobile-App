@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../products/screens/product_list_screen.dart';
 import '../cart/screens/cartScreen.dart';
 import '../profile/screens/profile_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,6 +13,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  String getUserRole() {
+    // In a real app, you'd get this from your auth state
+    // For now, return 'seller' so you can see both notification types
+    return 'seller';
+  }
 
   final List<Widget> _screens = [
     const ProductListScreen(),
@@ -31,9 +38,17 @@ class _MainScreenState extends State<MainScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('E-Commerce App'),
+          title: Text('app_name'.tr()),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           actions: [
+            IconButton(
+              onPressed: () {
+                context.locale.languageCode == 'en'
+                    ? context.setLocale(const Locale('ar'))
+                    : context.setLocale(const Locale('en'));
+              },
+              icon: const Icon(Icons.language),
+            ),
             Stack(
               children: [
                 IconButton(
@@ -70,13 +85,16 @@ class _MainScreenState extends State<MainScreen> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'home'.tr()),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
-              label: 'Cart',
+              label: 'cart'.tr(),
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'profile'.tr(),
+            ),
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema({
-  user: {
+  recipient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -16,17 +16,17 @@ const NotificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['order', 'cart', 'general'],
+    enum: ['order', 'cart', 'general', 'supplier'],
     default: 'general',
+  },
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order',
   },
   isRead: {
     type: Boolean,
     default: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model('Notification', NotificationSchema);

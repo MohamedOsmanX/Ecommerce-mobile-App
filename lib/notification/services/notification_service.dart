@@ -91,6 +91,81 @@ class NotificationService {
     );
   }
 
+  // Add this method to the NotificationService class
+
+Future<List<NotificationModel>> fetchSupplierNotifications() async {
+  final token = await TokenService.getToken();
+  if (token == null) {
+    throw Exception('No auth token found');
+  }
+
+  try {
+    final response = await http.get(
+      Uri.parse('$baseUrl/notifications/supplier'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => NotificationModel.fromJson(json)).toList();
+    } else {
+      throw Exception(
+        'Failed to fetch supplier notifications: ${response.statusCode}',
+      );
+    }
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
+// Add a local notification method for suppliers
+Future<void> sendSupplierNotification(String title, String message) async {
+  await _localNotifications.show(
+    DateTime.now().millisecondsSinceEpoch.hashCode,
+    title,
+    message,
+    const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'supplier',
+        'Supplier Updates',
+        channelDescription: 'Notifications for suppliers about orders',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    ),
+  );
+}
+
+// Add this method to the NotificationService class
+
+Future<void> markNotificationAsRead(String notificationId) async {
+  final token = await TokenService.getToken();
+  if (token == null) {
+    throw Exception('No auth token found');
+  }
+
+  try {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/notifications/$notificationId/read'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to mark notification as read: ${response.statusCode}',
+      );
+    }
+  } catch (e) {
+    throw Exception(e);
+  }
+}
+
   // Get FCM token for this device
   Future<String?> getDeviceToken() async {
     return await _firebaseMessaging.getToken();

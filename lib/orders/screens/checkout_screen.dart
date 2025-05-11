@@ -33,21 +33,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return;
     }
 
-    // Dispatch the CreateOrder event
-    context.read<OrderBloc>().add(CreateOrder(shippingAddress: address));
-
-    // Clear the cart
-    await Future.delayed(const Duration(seconds: 1));
-
-    context.read<CartBloc>().add(FetchCart());
-
-    // Navigate back to the cart screen
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Order Confirmed!')),
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
-  }
 
+    try {
+      // Create order
+      context.read<OrderBloc>().add(
+        CreateOrder(
+          shippingAddress: address
+        ),
+      );
+
+      // Wait for order creation to complete
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Close loading indicator
+      Navigator.pop(context);
+
+      // Refresh cart
+      if (mounted) {
+        context.read<CartBloc>().add(FetchCart());
+      }
+
+      // Navigate back to cart screen
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order placed successfully!')),
+        );
+      }
+    } catch (e) {
+      // Close loading indicator
+      Navigator.pop(context);
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to place order: $e')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

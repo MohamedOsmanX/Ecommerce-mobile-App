@@ -1,0 +1,11 @@
+{
+    "app_name": "E-Commerce App",
+    "home": "Home",
+    "cart": "Cart",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "products": "Products",
+    "login": "Login",
+    "register": "Register",
+    "orders": "Orders"
+  }
